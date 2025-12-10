@@ -3,589 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERBUZ | Operasyon Merkezi</title>
+    <title>ERBUZ | Güvenli Giriş</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --sidebar-bg: #0f172a;
-            --sidebar-gradient: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-            --primary: #3b82f6;
-            --bg-body: #f8fafc;
-            --text-main: #334155;
-            --glass-border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-
         body {
-            background-color: var(--bg-body);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-family: 'Outfit', sans-serif;
-            color: var(--text-main);
-            overflow-x: hidden;
+            overflow: hidden;
         }
+        /* Arka plan efektleri */
+        .circle {
+            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; z-index: 0;
+        }
+        .c1 { width: 300px; height: 300px; background: #3b82f6; top: 10%; left: 20%; }
+        .c2 { width: 400px; height: 400px; background: #8b5cf6; bottom: 10%; right: 20%; }
 
-        /* --- 1. KOZMETİK LOADER --- */
-        #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.98); z-index: 99999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.6s ease-out;
+        .login-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem; border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%; max-width: 400px; text-align: center;
+            z-index: 10; color: white;
         }
-        .loader-icon {
-            font-size: 4rem; color: var(--primary);
-            animation: pulse-spin 2s infinite cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.5));
+        .form-control {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white; padding: 12px 15px; border-radius: 12px; margin-bottom: 15px;
         }
-        @keyframes pulse-spin {
-            0% { transform: scale(1) rotate(0deg); opacity: 1; }
-            50% { transform: scale(1.1) rotate(180deg); opacity: 0.8; }
-            100% { transform: scale(1) rotate(360deg); opacity: 1; }
+        .form-control::placeholder { color: rgba(255, 255, 255, 0.4); }
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.1); border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2); color: white;
         }
-        .loader-text {
-            margin-top: 20px; font-weight: 800; letter-spacing: 4px; color: #64748b;
-            font-size: 0.9rem; text-transform: uppercase; animation: fadeText 1.5s infinite;
+        .btn-login {
+            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+            border: none; padding: 14px; font-weight: 700; border-radius: 12px;
+            width: 100%; margin-top: 10px; transition: 0.3s;
         }
-        @keyframes fadeText { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
-
-        /* --- 2. SIDEBAR (PREMIUM) --- */
-        .sidebar {
-            width: 280px; height: 100vh;
-            background: var(--sidebar-bg); background-image: var(--sidebar-gradient);
-            position: fixed; top: 0; left: 0; z-index: 1050;
-            padding-top: 40px; color: white;
-            box-shadow: 10px 0 30px rgba(0,0,0,0.15);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .brand {
-            font-size: 1.8rem; font-weight: 800; text-align: center; margin-bottom: 50px;
-            letter-spacing: -0.5px; display: flex; align-items: center; justify-content: center; gap: 12px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .menu-label {
-            padding: 0 35px; margin-bottom: 15px; font-size: 0.75rem;
-            font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px;
-        }
-        .menu-item {
-            display: flex; align-items: center; gap: 15px; padding: 16px 35px;
-            color: #94a3b8; text-decoration: none; font-weight: 600; font-size: 1rem;
-            transition: all 0.3s; border-left: 4px solid transparent;
-        }
-        .menu-item:hover { background: rgba(255,255,255,0.05); color: white; padding-left: 40px; }
-        .menu-item.active {
-            background: linear-gradient(90deg, rgba(59,130,246,0.15) 0%, transparent 100%);
-            color: #60a5fa; border-left-color: #3b82f6;
-        }
-
-        /* --- 3. MAIN CONTENT --- */
-        .main { margin-left: 280px; padding: 40px; transition: margin-left 0.3s; }
-
-        /* HEADER (CAM EFEKTİ) */
-        .header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;
-            background: rgba(255,255,255,0.85); backdrop-filter: blur(20px);
-            padding: 15px 30px; border-radius: 20px;
-            border: var(--glass-border); box-shadow: 0 8px 32px rgba(0,0,0,0.05);
-        }
-        .profile-chip {
-            background: white; padding: 6px 8px 6px 20px; border-radius: 50px;
-            display: flex; align-items: center; gap: 15px; cursor: pointer;
-            border: 1px solid #e2e8f0; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-        .profile-chip:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
-
-        /* ÇIKIŞ BUTONU (LİNK YAPILDI - KESİN ÇÖZÜM) */
-        .btn-exit {
-            background: #ef4444; color: white; border: none;
-            padding: 10px 24px; border-radius: 50px; font-weight: 700; font-size: 0.9rem;
-            display: flex; align-items: center; gap: 8px; transition: 0.3s; text-decoration: none;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-        }
-        .btn-exit:hover { background: #dc2626; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4); color: white; }
-
-        /* KARTLAR */
-        .stat-card {
-            background: white; border-radius: 24px; padding: 30px;
-            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); border: 1px solid white;
-            position: relative; overflow: hidden; height: 100%; transition: all 0.3s ease;
-        }
-        .stat-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1); }
-        .stat-title { font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-value { font-size: 2.8rem; font-weight: 800; color: #0f172a; margin: 10px 0 0 0; }
-        .icon-box {
-            position: absolute; right: 25px; top: 25px; font-size: 2rem;
-            width: 60px; height: 60px; border-radius: 16px;
-            display: flex; align-items: center; justify-content: center; opacity: 0.9;
-        }
-        .bg-green-soft { background: #ecfdf5; color: #10b981; }
-        .bg-blue-soft { background: #eff6ff; color: #3b82f6; }
-        .bg-purple-soft { background: #f5f3ff; color: #8b5cf6; }
-
-        /* TABLO */
-        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0 15px; }
-        .modern-table thead th {
-            color: #94a3b8; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
-            padding: 0 25px; letter-spacing: 1px; border: none;
-        }
-        .modern-table tbody tr {
-            background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.02); transition: all 0.3s;
-        }
-        .modern-table tbody tr:hover { transform: scale(1.01); box-shadow: 0 15px 30px rgba(0,0,0,0.08); z-index: 10; position: relative; }
-        .modern-table td { padding: 25px; vertical-align: middle; border: none; }
-        .modern-table td:first-child { border-radius: 20px 0 0 20px; }
-        .modern-table td:last-child { border-radius: 0 20px 20px 0; }
-
-        /* ÜRÜN FOTOĞRAFLARI (FALLBACK İÇİN GİZLİ KUTU) */
-        .product-img-real {
-            width: 60px; height: 60px; border-radius: 14px; object-fit: cover;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 2px solid white;
-        }
-        .product-box-fallback {
-            width: 60px; height: 60px; border-radius: 14px; 
-            display: none; /* Varsayılan olarak gizli */
-            align-items: center; justify-content: center;
-            font-size: 1.5rem; font-weight: 700; color: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 2px solid white;
-        }
-        .fb-kalip { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
-        .fb-parca { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); }
-        .fb-kristal { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
-
-        /* BUTONLAR */
-        .btn-action {
-            background: #3b82f6; color: white; border: none;
-            padding: 10px 24px; border-radius: 12px; font-weight: 600; font-size: 0.9rem;
-            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); transition: 0.2s; cursor: pointer;
-        }
-        .btn-action:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); }
-        
-        .btn-sell { background: #ef4444; color: white; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); }
-        .btn-sell:hover { background: #dc2626; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4); }
-
-        .btn-disabled {
-            background: #e2e8f0; color: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none !important;
-        }
-
-        /* ROZETLER */
-        .badge-pro { padding: 8px 16px; border-radius: 30px; font-weight: 700; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 6px; }
-        .badge-success { background: #dcfce7; color: #166534; }
-        .badge-warning { background: #fef9c3; color: #854d0e; }
-        .badge-danger { background: #fee2e2; color: #991b1b; }
-
-        /* MODAL */
-        .modal-content { border-radius: 24px; border: none; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); position: relative; }
-        /* ÇARPI BUTONU */
-        .btn-close-custom { position: absolute; top: 20px; right: 20px; background: #fee2e2; color: #ef4444; border: none; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; transition: 0.2s; z-index: 10; }
-        .btn-close-custom:hover { background: #ef4444; color: white; transform: rotate(90deg); }
-
-        /* MOBİL UYUM */
-        @media (max-width: 992px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.active { transform: translateX(0); }
-            .main { margin-left: 0; padding: 20px; }
-            .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1040; backdrop-filter: blur(4px); }
-            .mobile-overlay.active { display: block; }
-            
-            /* Mobilde Tablo Kart Dönüşümü */
-            .modern-table thead { display: none; }
-            .modern-table tbody tr { display: flex; flex-direction: column; padding: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; border-radius: 20px !important; }
-            .modern-table td { padding: 12px 0; border-bottom: 1px dashed #e2e8f0; display: flex; justify-content: space-between; align-items: center; border-radius: 0 !important; }
-            .modern-table td:last-child { border-bottom: none; justify-content: center; padding-top: 20px; }
-            .modern-table td::before { content: attr(data-label); font-weight: 700; color: #64748b; font-size: 0.8rem; }
-            .modern-table td:first-child { background: #f8fafc; margin: -20px -20px 15px -20px; padding: 20px; border-bottom: 1px solid #e2e8f0; justify-content: flex-start; gap: 15px; }
-            .modern-table td:first-child::before { content: none; }
-        }
-
-        /* SAYFA GEÇİŞİ */
-        .page-content { display: none; animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .page-content.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4); }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="loader-icon"><i class="fas fa-snowflake"></i></div>
-        <p class="loader-text">ERBUZ SYSTEM</p>
-    </div>
+    <div class="circle c1"></div>
+    <div class="circle c2"></div>
 
-    <div class="mobile-overlay" onclick="toggleSidebar()"></div>
-
-    <div class="sidebar" id="sidebar">
-        <div class="brand">
-            <i class="fas fa-cube text-primary"></i> ERBUZ
+    <div class="login-card">
+        <div class="mb-4">
+            <h1 class="fw-bold m-0">ERBUZ</h1>
+            <p class="text-white-50 small">Operasyon Yönetim Sistemi</p>
         </div>
-
-        <div class="menu-label">YÖNETİM</div>
-        <a href="#" class="menu-item active" onclick="switchPage('home', this)">
-            <i class="fas fa-chart-pie" style="width:24px"></i> Genel Bakış
-        </a>
-        <a href="#" class="menu-item" onclick="switchPage('stok', this)">
-            <i class="fas fa-boxes-stacked" style="width:24px"></i> Stok Yönetimi
-        </a>
-        <a href="#" class="menu-item" onclick="switchPage('satis', this)">
-            <i class="fas fa-file-invoice-dollar" style="width:24px"></i> Satış Geçmişi
-        </a>
-    </div>
-
-    <div class="main">
         
-        <div class="header">
-            <div class="d-flex align-items-center">
-                <button class="btn d-lg-none me-3 p-2" onclick="toggleSidebar()"><i class="fas fa-bars fa-lg"></i></button>
-                <div>
-                    <h4 class="fw-bold m-0 text-dark">Yönetim Paneli</h4>
-                    <p class="text-muted m-0 small d-none d-sm-block">İzmir Bölge Müdürlüğü</p>
-                </div>
-            </div>
-            
-            <div class="d-flex align-items-center gap-3">
-                <div class="profile-chip" data-bs-toggle="modal" data-bs-target="#profilModal">
-                    <div class="text-end lh-1 d-none d-sm-block">
-                        <div class="fw-bold text-dark" style="font-size:0.9rem;" id="headerName">Köksal K.</div>
-                        <small class="text-muted" style="font-size:0.75rem;">Yönetici</small>
-                    </div>
-                    <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center" style="width:40px; height:40px;">
-                        <i class="fas fa-user"></i>
-                    </div>
-                </div>
-                
-                <a href="index.html" class="btn-exit" onclick="return confirm('Güvenli çıkış yapmak istiyor musunuz?');">
-                    <i class="fas fa-power-off"></i> <span class="d-none d-md-inline">Çıkış</span>
-                </a>
-            </div>
-        </div>
-
-        <div id="home" class="page-content active">
-            <div class="row g-4 mb-5">
-                <div class="col-md-4">
-                    <div class="stat-card">
-                        <div class="stat-title">Toplam Stok</div>
-                        <div class="stat-value text-success" id="ozet-stok">0 <span class="fs-6 text-muted">Adet</span></div>
-                        <div class="icon-box bg-green-soft"><i class="fas fa-cubes"></i></div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-card">
-                        <div class="stat-title">Günlük Ciro</div>
-                        <div class="stat-value text-primary" id="ozet-ciro">0 <span class="fs-6 text-muted">₺</span></div>
-                        <div class="icon-box bg-blue-soft"><i class="fas fa-wallet"></i></div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-card">
-                        <div class="stat-title">Sahadaki Araç</div>
-                        <div class="stat-value" style="color:#8b5cf6">3 <span class="fs-6 text-muted">Araç</span></div>
-                        <div class="icon-box bg-purple-soft"><i class="fas fa-truck-fast"></i></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-4 rounded-4 shadow-sm border border-light d-flex align-items-center gap-3">
-                <div class="bg-success bg-opacity-10 p-3 rounded-circle text-success">
-                    <i class="fas fa-check-circle fs-4"></i>
-                </div>
-                <div>
-                    <h6 class="fw-bold m-0 text-dark">Sistem Durumu</h6>
-                    <p class="text-muted m-0 small">Aktif bildirim bulunmamaktadır. Tüm operasyonlar normal.</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="stok" class="page-content">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="fw-bold m-0 text-dark">Envanter Durumu</h4>
-                <button class="btn-action" data-bs-toggle="modal" data-bs-target="#stokModal">
-                    <i class="fas fa-plus me-2"></i> Stok Ekle
-                </button>
-            </div>
-
-            <table class="modern-table">
-                <thead>
-                    <tr>
-                        <th>Ürün Bilgisi</th>
-                        <th>Birim Fiyat</th>
-                        <th>Anlık Stok</th>
-                        <th>Durum</th>
-                        <th class="text-end">İşlem</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td data-label="">
-                            <div class="d-flex align-items-center gap-3">
-                                <img src="https://images.unsplash.com/photo-1625723044792-44de168bf33d?auto=format&fit=crop&w=100&q=80" 
-                                     class="product-img-real" 
-                                     onerror="this.style.display='none'; document.getElementById('fb-kalip').style.display='flex';">
-                                <div id="fb-kalip" class="product-box-fallback fb-kalip">K</div>
-                                
-                                <div>
-                                    <div class="fw-bold text-dark">5 KG Kalıp Buz</div>
-                                    <small class="text-muted">Standart Blok</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td data-label="Fiyat" class="fw-bold text-muted"><span id="fiyat-kalip">35</span> ₺</td>
-                        <td data-label="Stok"><span id="stok-kalip" class="fw-bold fs-5 text-dark">0</span> <small>Adet</small></td>
-                        <td data-label="Durum"><span id="badge-kalip" class="badge-pro badge-danger"><i class="fas fa-times-circle"></i> Tükendi</span></td>
-                        <td data-label="" class="text-end">
-                            <button id="btn-kalip" class="btn-action btn-sell btn-disabled" onclick="openSatis('kalip')" disabled>Stok Yok</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td data-label="">
-                            <div class="d-flex align-items-center gap-3">
-                                <img src="https://images.unsplash.com/photo-1596703073990-256793a32338?auto=format&fit=crop&w=100&q=80" 
-                                     class="product-img-real" 
-                                     onerror="this.style.display='none'; document.getElementById('fb-parca').style.display='flex';">
-                                <div id="fb-parca" class="product-box-fallback fb-parca">P</div>
-
-                                <div>
-                                    <div class="fw-bold text-dark">10 KG Parça Buz</div>
-                                    <small class="text-muted">Kırık / Kokteyl</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td data-label="Fiyat" class="fw-bold text-muted"><span id="fiyat-parca">60</span> ₺</td>
-                        <td data-label="Stok"><span id="stok-parca" class="fw-bold fs-5 text-dark">0</span> <small>Adet</small></td>
-                        <td data-label="Durum"><span id="badge-parca" class="badge-pro badge-danger"><i class="fas fa-times-circle"></i> Tükendi</span></td>
-                        <td data-label="" class="text-end">
-                            <button id="btn-parca" class="btn-action btn-sell btn-disabled" onclick="openSatis('parca')" disabled>Stok Yok</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td data-label="">
-                            <div class="d-flex align-items-center gap-3">
-                                <img src="https://images.unsplash.com/photo-1552055743-4cb98446b7a6?auto=format&fit=crop&w=100&q=80" 
-                                     class="product-img-real" 
-                                     onerror="this.style.display='none'; document.getElementById('fb-kristal').style.display='flex';">
-                                <div id="fb-kristal" class="product-box-fallback fb-kristal">KR</div>
-
-                                <div>
-                                    <div class="fw-bold text-dark">Kristal Buz (Özel)</div>
-                                    <small class="text-muted">Premium / Saf</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td data-label="Fiyat" class="fw-bold text-muted"><span id="fiyat-kristal">90</span> ₺</td>
-                        <td data-label="Stok"><span id="stok-kristal" class="fw-bold fs-5 text-dark">0</span> <small>Adet</small></td>
-                        <td data-label="Durum"><span id="badge-kristal" class="badge-pro badge-danger"><i class="fas fa-times-circle"></i> Tükendi</span></td>
-                        <td data-label="" class="text-end">
-                            <button id="btn-kristal" class="btn-action btn-sell btn-disabled" onclick="openSatis('kristal')" disabled>Stok Yok</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div id="satis" class="page-content">
-            <h4 class="fw-bold m-0 mb-4 text-dark">Satış Geçmişi</h4>
-            <div class="bg-white rounded-4 p-4 shadow-sm border border-light">
-                <table class="modern-table" id="satisTablosu">
-                    <thead><tr><th>Fiş No</th><th>Saat</th><th>Ürün</th><th>Miktar</th><th>Tutar</th><th>Bölge</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-                <div id="bos-mesaj" class="text-center text-muted py-5">
-                    <i class="fas fa-folder-open fa-3x mb-3 opacity-25"></i>
-                    <p class="mt-2">Henüz satış kaydı bulunmamaktadır.</p>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="modal fade" id="stokModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg">
-                <button type="button" class="btn-close-custom" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
-                <div class="modal-body p-5">
-                    <h4 class="fw-bold text-center mb-4">Ürün Girişi</h4>
-                    <label class="small fw-bold text-muted mb-1">ÜRÜN SEÇİNİZ</label>
-                    <select class="form-select form-select-lg mb-3" id="stokUrun">
-                        <option value="kalip">5 KG Kalıp Buz</option>
-                        <option value="parca">10 KG Parça Buz</option>
-                        <option value="kristal">Kristal Buz</option>
-                    </select>
-                    <label class="small fw-bold text-muted mb-1">EKLENECEK MİKTAR</label>
-                    <input type="number" class="form-control form-control-lg mb-4" id="stokMiktar" placeholder="0">
-                    <button class="btn-action w-100 py-3" onclick="stokEkle()">STOKLARA EKLE</button>
-                </div>
-            </div>
+        <form onsubmit="return girisYap(event)">
+            <input type="text" id="kadi" class="form-control" placeholder="Kullanıcı Adı (admin)" required>
+            <input type="password" id="sifre" class="form-control" placeholder="Şifre (1234)" required>
+            <button type="submit" class="btn btn-primary btn-login">Giriş Yap</button>
+        </form>
+        
+        <div class="mt-4 text-white-50" style="font-size: 0.75rem;">
+            Sadece yetkili personel içindir.
         </div>
     </div>
 
-    <div class="modal fade" id="satisModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg">
-                <button type="button" class="btn-close-custom" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
-                <div class="modal-body p-5">
-                    <h4 class="fw-bold text-center text-danger mb-4">Satış Çıkışı</h4>
-                    <input type="hidden" id="satisId">
-                    <div class="text-center mb-4"><span class="badge bg-light text-dark border px-3 py-2 fs-6" id="satisUrunAd">...</span></div>
-                    <div class="row g-2 mb-4">
-                        <div class="col-6"><label class="small fw-bold text-muted">ADET</label><input type="number" class="form-control" id="satisAdet"></div>
-                        <div class="col-6">
-                            <label class="small fw-bold text-muted">BÖLGE</label>
-                            <select class="form-select" id="satisBolge"><option>Karşıyaka</option><option>Bornova</option><option>Alsancak</option><option>Buca</option><option>Konak</option><option>Gaziemir</option></select>
-                        </div>
-                    </div>
-                    <button class="btn-action btn-sell w-100 py-3" onclick="satisYap()">SATIŞI ONAYLA</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="profilModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg">
-                <button type="button" class="btn-close-custom" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>
-                <div class="modal-body p-5 text-center">
-                    <div class="bg-primary rounded-circle text-white d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width:80px; height:80px; font-size:2.5rem;"><i class="fas fa-user"></i></div>
-                    <h4 class="fw-bold m-0" id="modalName">Köksal K.</h4>
-                    <p class="text-muted mb-4">Firma Sahibi</p>
-                    
-                    <div class="text-start">
-                        <label class="small fw-bold text-muted mb-1">YENİ İSİM</label>
-                        <input type="text" class="form-control mb-3" id="inputName" value="Köksal K.">
-                        <hr>
-                        <label class="small fw-bold text-muted mb-1">ŞİFRE DEĞİŞTİR</label>
-                        <input type="password" class="form-control mb-2" id="oldPass" placeholder="Mevcut Şifre (1234)">
-                        <input type="password" class="form-control mb-4" id="newPass" placeholder="Yeni Şifre">
-                    </div>
-
-                    <button class="btn-action w-100" style="background:#1e293b" onclick="profilKaydet()">KAYDET</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // SİSTEM AÇILIŞ
-        window.onload = function() {
-            setTimeout(() => { document.getElementById('loader').style.opacity = '0'; setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 500); }, 1200);
+        function girisYap(e) {
+            e.preventDefault();
+            let k = document.getElementById('kadi').value;
+            let s = document.getElementById('sifre').value;
             
-            // Başlangıçta butonları kontrol et (0 olduğu için kapalı gelecek)
-            checkStatus('kalip', 0); checkStatus('parca', 0); checkStatus('kristal', 0);
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.querySelector('.mobile-overlay').classList.toggle('active');
-        }
-
-        function switchPage(id, el) {
-            document.getElementById('loader').style.display = 'flex'; 
-            document.getElementById('loader').style.opacity = '1';
-            
-            setTimeout(() => {
-                if(window.innerWidth < 768) toggleSidebar();
-                document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-                document.getElementById(id).classList.add('active');
-                if(el) {
-                    document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-                    el.classList.add('active');
-                }
-                document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 400);
-            }, 400);
-        }
-
-        function stokEkle() {
-            let id = document.getElementById('stokUrun').value;
-            let miktar = parseInt(document.getElementById('stokMiktar').value);
-            if(!miktar || miktar<=0) return;
-            
-            let el = document.getElementById('stok-'+id);
-            let yeni = parseInt(el.innerText) + miktar;
-            el.innerText = yeni;
-            
-            checkStatus(id, yeni);
-            updateSummary();
-            bootstrap.Modal.getInstance(document.getElementById('stokModal')).hide();
-            document.getElementById('stokMiktar').value="";
-        }
-
-        function openSatis(id) {
-            document.getElementById('satisId').value = id;
-            document.getElementById('satisUrunAd').innerText = id=='kalip'?'5 KG Kalıp Buz':(id=='parca'?'10 KG Parça Buz':'Kristal Buz (Özel)');
-            document.getElementById('satisAdet').value = "";
-            new bootstrap.Modal(document.getElementById('satisModal')).show();
-        }
-
-        function satisYap() {
-            let id = document.getElementById('satisId').value;
-            let adet = parseInt(document.getElementById('satisAdet').value);
-            let bolge = document.getElementById('satisBolge').value;
-            let stokEl = document.getElementById('stok-'+id);
-            let mevcut = parseInt(stokEl.innerText);
-
-            if(!adet || adet<=0) return alert('Lütfen geçerli bir adet giriniz.');
-            if(adet > mevcut) return alert('Yetersiz stok!');
-
-            let yeni = mevcut - adet;
-            stokEl.innerText = yeni;
-            checkStatus(id, yeni);
-
-            let fiyat = parseFloat(document.getElementById('fiyat-'+id).innerText);
-            let ciroEl = document.getElementById('ozet-ciro');
-            let eski = parseFloat(ciroEl.innerText.replace('₺','').replace('.','')) || 0;
-            ciroEl.innerText = (eski + (adet*fiyat)).toLocaleString('tr-TR') + " ₺";
-
-            document.getElementById('bos-mesaj').style.display='none';
-            let table = document.getElementById('satisTablosu').querySelector('tbody');
-            let row = table.insertRow(0);
-            row.innerHTML = `<td data-label="Fiş No" class="text-primary fw-bold">#${Math.floor(Math.random()*9000)+1000}</td><td data-label="Saat">${new Date().toLocaleTimeString().slice(0,5)}</td><td data-label="Ürün">${document.getElementById('satisUrunAd').innerText}</td><td data-label="Miktar">${adet}</td><td data-label="Tutar" class="text-success fw-bold">+${adet*fiyat} ₺</td><td data-label="Bölge"><span class="badge bg-light text-dark border">${bolge}</span></td>`;
-
-            updateSummary();
-            bootstrap.Modal.getInstance(document.getElementById('satisModal')).hide();
-        }
-
-        function checkStatus(id, stok) {
-            let badge = document.getElementById('badge-'+id);
-            let btn = document.getElementById('btn-'+id);
-            
-            if(stok <= 0) {
-                badge.className = 'badge-pro badge-danger'; 
-                badge.innerHTML = '<i class="fas fa-times-circle"></i> Tükendi';
-                btn.classList.add('btn-disabled'); // Grilik
-                btn.disabled = true; // Tıklanamaz
-                btn.innerText = "Stok Yok";
-            } else if(stok < 50) {
-                badge.className = 'badge-pro badge-warning'; 
-                badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Kritik';
-                btn.classList.remove('btn-disabled');
-                btn.disabled = false;
-                btn.innerText = "Satış Çık";
+            // ŞİFRE KONTROLÜ
+            if(k === 'admin' && s === '1234') {
+                // Başarılıysa panele git
+                window.location.href = 'panel.html';
             } else {
-                badge.className = 'badge-pro badge-success'; 
-                badge.innerHTML = '<i class="fas fa-check-circle"></i> Yeterli';
-                btn.classList.remove('btn-disabled');
-                btn.disabled = false;
-                btn.innerText = "Satış Çık";
+                alert('Hatalı kullanıcı adı veya şifre!');
             }
-        }
-
-        function updateSummary() {
-            let t = 0;
-            ['kalip','parca','kristal'].forEach(i => t += parseInt(document.getElementById('stok-'+i).innerText));
-            document.getElementById('ozet-stok').innerText = t + " Adet";
-        }
-
-        function aracGuncelle() {
-            let n = prompt("Araç sayısı:", document.getElementById('arac-sayisi').innerText);
-            if(n) document.getElementById('arac-sayisi').innerText = n;
-        }
-
-        function profilKaydet() {
-            let old = document.getElementById('oldPass').value;
-            if(old && old !== '1234') return alert('Mevcut şifre hatalı!');
-            let name = document.getElementById('inputName').value;
-            document.getElementById('headerName').innerText = name;
-            document.getElementById('modalName').innerText = name;
-            bootstrap.Modal.getInstance(document.getElementById('profilModal')).hide();
-            alert('Profil başarıyla güncellendi.');
         }
     </script>
 </body>
